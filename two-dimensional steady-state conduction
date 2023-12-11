@@ -1,0 +1,89 @@
+a=4/100;
+b=6/100;
+mnx=[7 11 43];
+mny=[15 23 87];
+for Q=1:3
+    nx=mnx(Q);
+    ny=mny(Q);
+    dx=(2*a)/(nx+1);
+    dy=(2*b)/(ny+1);
+    n=nx*ny;
+    k=237;
+    q=1*(10^8);
+
+Vector de llenado resultados
+    R=ones(n,1);
+    r=-(q*(dx^2)*(dy^2))/(k);
+    R=R*r;
+
+Vector de llenado diagonales dx
+    H=ones((n-nx),1);
+    H=H*(dx^2);
+
+Vector de llenado diagonales dy
+    G=zeros((n-1),1);
+    C=0;
+    for i=1:(n-1)
+        if C~=(nx-1)
+            G(i)=dy^2;
+        else
+            G(i)=0;
+            C=-1;
+        end
+        C=C+1;
+    end
+
+Matriz con la digonal principal
+    M1=eye(n);
+    M1=M1*(-2*((dx^2)+(dy^2)));
+
+Matriz con la diagonall superior dx
+    M2=diag(H,nx);
+
+Matriz con la diagonal inferior dx
+    M3=diag(H,-nx);
+
+Matriz con la diagonal superior dy
+    M4=diag(G,1);
+
+Matriz con la diagonal inferior dy
+    M5=diag(G,-1);
+
+Obteniendo matriz de coeficientes
+    M=M1+M2+M3+M4+M5;
+
+Vector con temperaturas
+    T=M\R;
+    MT=zeros((ny)+2,(nx)+2);
+        c2=1;
+        for i=1:ny+2
+            for j=1:nx+2
+                if j~=1 && i~=1 && j~=nx+2 && i~=ny+2
+                    MT(i,j)=T(c2);
+                    c2=c2+1;
+                end
+            end
+        end
+
+Graficando con contourf
+    figure(Q);
+    contourf(MT);
+    set(gca,'Ydir','normal');
+    axis equal tight;
+
+Graficando ejes x/y
+    %para y=0
+    x=-a:dx:a;
+    x=x*100;
+    Tx=MT(((ny+3)/2),:);
+    figure(4);
+    plot(x,Tx);
+    hold on;
+    %para x=0
+    y=-b:dy:b;
+    y=y*100;
+    Ty=MT(:,((nx+3)/2));
+    figure(5);
+    plot(Ty,y);
+    hold on;
+end
